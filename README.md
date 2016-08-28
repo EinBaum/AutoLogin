@@ -1,12 +1,10 @@
 #AutoLogin#
 
-Starts WoW (tested with version 1.12.1 only).
-Enters login information and presses enter.
-After that, this program is closed.
+This program starts WoW and automatically enters your login information.
+Tested with version 1.12.1 only.
 
+##Usage##
 
-###Usage###
-
-After compiling the program, start it with the following command line parameters:
+After compiling this program, start it with the following command line parameters:
 
 AutoLogin.exe GAMEPATH ACCOUNT PASSWORD
