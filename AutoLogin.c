@@ -6,53 +6,61 @@ DWORD processId;
 char *account;
 char *password;
 
-// https://batchloaf.wordpress.com/2012/04/17/simulating-a-keystroke-in-win32-c-or-c-using-sendinput/
-void SendKey(HANDLE hWnd, char key)
+
+void AL_Key(HANDLE hWnd, WORD vk, BOOL press)
 {
 	INPUT ip;
-	// Set up a generic keyboard event.
+	ZeroMemory(&ip, sizeof(INPUT));
+
 	ip.type = INPUT_KEYBOARD;
-	ip.ki.wScan = 0; // hardware scan code for key
-	ip.ki.time = 0;
-	ip.ki.dwExtraInfo = 0;
-
-	// Press
-	ip.ki.wVk = VkKeyScan(key);
-	ip.ki.dwFlags = 0; // 0 for key press
-	SendInput(1, &ip, sizeof(INPUT));
-
-	// Release
-	ip.ki.dwFlags = KEYEVENTF_KEYUP; // KEYEVENTF_KEYUP for key release
+	ip.ki.wVk = vk;
+	ip.ki.dwFlags = (press ? 0 : KEYEVENTF_KEYUP);
 	SendInput(1, &ip, sizeof(INPUT));
 }
 
-void SendAndExit(HANDLE hWnd)
+void AL_SendKey(HANDLE hWnd, char key)
+{
+	WORD vk = VkKeyScan(key);
+	BOOL isUpper = IsCharUpper(key);
+
+	if (isUpper) {
+		AL_Key(hWnd, VK_LSHIFT, TRUE);
+	}
+
+	AL_Key(hWnd, vk, TRUE);
+	AL_Key(hWnd, vk, FALSE);
+
+	if (isUpper) {
+		AL_Key(hWnd, VK_LSHIFT, FALSE);
+	}
+}
+
+void AL_SendInfo(HANDLE hWnd)
 {
 	char *pKey = account;
 	while (*pKey != '\0') {
-		SendKey(hWnd, *pKey);
+		AL_SendKey(hWnd, *pKey);
 		pKey++;
 	}
 
-	SendKey(hWnd, '\t');
+	AL_SendKey(hWnd, '\t');
 
 	pKey = password;
 	while (*pKey != '\0') {
-		SendKey(hWnd, *pKey);
+		AL_SendKey(hWnd, *pKey);
 		pKey++;
 	}
 
-	SendKey(hWnd, '\n');
-
-	exit(0);
+	AL_SendKey(hWnd, '\n');
 }
 
-BOOL CALLBACK Window_Callback(HWND hWnd, LONG lParam) {
+BOOL CALLBACK AL_Window_Callback(HWND hWnd, LONG lParam) {
     if (IsWindowVisible(hWnd)) {
     	DWORD testId;
 	GetWindowThreadProcessId(hWnd, &testId);
 	if (testId == processId) {
-		SendAndExit(hWnd);
+		AL_SendInfo(hWnd);
+		exit(0);
 	}
     }
     return TRUE;
@@ -65,7 +73,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	STARTUPINFO si; ZeroMemory(&si, sizeof(STARTUPINFO));
+	STARTUPINFO si;
+	ZeroMemory(&si, sizeof(STARTUPINFO));
 	si.cb = sizeof(STARTUPINFO);
 
 	PROCESS_INFORMATION pi;
@@ -93,7 +102,7 @@ int main(int argc, char *argv[])
 
 	for (;;) {
 		Sleep(200);
-		EnumWindows(Window_Callback, 0);
+		EnumWindows(AL_Window_Callback, 0);
 	}
 
 	return 0;
