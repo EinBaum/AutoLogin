@@ -9,6 +9,6 @@ After compiling this program, start it with the following command line parameter
 
 AutoLogin.exe GAMEPATH ACCOUNT PASSWORD
 
-# Notes
+## Notes
 
 Consider using the GUI version of this program: [AutoLoginGUI](https://github.com/EinBaum/AutoLoginGUI)
