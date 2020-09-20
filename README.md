@@ -7,7 +7,11 @@ Only WoW 1.12.1 was tested to work with this program.
 
 After compiling this program, start it with the following command line parameters:
 
-AutoLogin.exe GAMEPATH ACCOUNT PASSWORD
+	AutoLogin.exe GAMEPATH ACCOUNT PASSWORD DELAY_MS
+
+Example:
+
+	AutoLogin.exe WoW.exe Username Password 1000
 
 ## Notes
 

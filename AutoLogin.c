@@ -5,7 +5,7 @@
 DWORD processId;
 char *account;
 char *password;
-
+int delay;
 
 void AL_Key(HANDLE hWnd, WORD vk, BOOL press)
 {
@@ -57,19 +57,20 @@ void AL_SendInfo(HANDLE hWnd)
 BOOL CALLBACK AL_Window_Callback(HWND hWnd, LONG lParam) {
     if (IsWindowVisible(hWnd)) {
     	DWORD testId;
-	GetWindowThreadProcessId(hWnd, &testId);
-	if (testId == processId) {
-		AL_SendInfo(hWnd);
-		exit(0);
+		GetWindowThreadProcessId(hWnd, &testId);
+		if (testId == processId) {
+			Sleep(delay);
+			AL_SendInfo(hWnd);
+			exit(0);
+		}
 	}
-    }
     return TRUE;
 }
 
 int main(int argc, char *argv[])
 {
-	if (argc != 4) {
-		printf("Usage: %s GAMEPATH ACCOUNT PASSWORD\n", argv[0]);
+	if (argc != 5) {
+		printf("Usage: %s GAMEPATH ACCOUNT PASSWORD DELAY_MS\n", argv[0]);
 		return 1;
 	}
 
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])
 	processId = pi.dwProcessId;
 	account = argv[2];
 	password = argv[3];
+	delay = atoi(argv[4]);
 
 	for (;;) {
 		Sleep(200);
