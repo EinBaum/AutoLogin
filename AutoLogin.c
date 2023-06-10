@@ -23,14 +23,14 @@ void AL_SendKey(HANDLE hWnd, char key)
 	WORD vk = VkKeyScan(key);
 	BOOL isUpper = IsCharUpper(key);
 
-	if (isUpper) {
+	if (isUpper || ispunct(key)) {
 		AL_Key(hWnd, VK_LSHIFT, TRUE);
 	}
 
 	AL_Key(hWnd, vk, TRUE);
 	AL_Key(hWnd, vk, FALSE);
 
-	if (isUpper) {
+	if (isUpper || ispunct(key)) {
 		AL_Key(hWnd, VK_LSHIFT, FALSE);
 	}
 }
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 
 	for (;;) {
 		Sleep(200);
-		EnumWindows(AL_Window_Callback, 0);
+		EnumWindows((WNDENUMPROC) AL_Window_Callback, 0);
 	}
 
 	return 0;
